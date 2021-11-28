@@ -1,3 +1,4 @@
+
 // Write a C program that takes one or more file/directory names as command line
 // input and reports the following information on the file:
 // o File type
@@ -6,33 +7,36 @@
 // o Read, write, and execute permission
 
 #include <stdio.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-void main()
+
+int main()
 {
-    int fd;
+    int f;
     struct stat buf;
-    fd = open("f5.txt", O_RDONLY | O_CREAT, 600);
-    if (fd != -1)
+    f = open("f5.txt", O_RDONLY);
+    if (f != -1)
     {
-        if (fstat(fd, &buf) == 0)
+        if (fstat(f, &buf) == 0)
         {
-            printf("mode of fileis %u", buf.st_mode);
-            printf("\n size of the file is %u", buf.st_size);
-            printf("\n device name %u", buf.st_dev);
-            printf("\n inode of file is %u", buf.st_ino);
-            printf("\n no. of links are %u", buf.st_nlink);
-            printf("\n owner oof a file is %u", buf.st_uid);
-            printf("\n no.of blocks is %u", buf.st_blocks);
-            printf("\n group owner is %u", buf.st_gid);
-            printf("\n blocks size of the file is %u", buf.st_blksize);
-            printf("\n time of last modifiedis %u", buf.st_ctime);
+            printf("File type: ");
+            if (S_ISREG(buf.st_mode))
+                printf("regular file\n");
+            printf("%lu\n", buf.st_nlink);
+            printf("%lu\n", buf.st_atime);
+            if (buf.st_mode & S_IRUSR)
+            {
+                printf("Read\n");
+            }
+            if (buf.st_mode & S_IWUSR)
+            {
+                printf("Write\n");
+            }
+            if (buf.st_mode & S_IXUSR)
+            {
+                printf("Execute\n");
+            }
         }
-        else
-            printf("error in fstat() syscall");
     }
-    else
-        printf("error in open() sys call");
 }
